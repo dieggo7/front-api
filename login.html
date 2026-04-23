@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | RaceSystem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+  <main class="login-page">
+    <section class="login-brand">
+      <span class="badge">Sistema de Corridas</span>
+      <h1>Gerencie corredores, equipes e rankings em uma interface moderna.</h1>
+      <p>Este layout foi pensado para representar visualmente a sua API, com foco em navegação simples, leitura rápida de dados e organização por módulos.</p>
+      <div class="feature-list">
+        <article class="feature-card">
+          <h2>Corredores</h2>
+          <p>Visualização de cadastro, edição e desempenho individual.</p>
+        </article>
+        <article class="feature-card">
+          <h2>Equipes</h2>
+          <p>Painel com pontuação, líderes e posição no campeonato.</p>
+        </article>
+        <article class="feature-card">
+          <h2>Corridas</h2>
+          <p>Calendário das próximas provas e métricas principais.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="login-card-wrapper">
+      <div class="login-card">
+        <div class="login-card-header">
+          <h2>Acessar painel</h2>
+          <p>Interface somente visual, sem integração com backend.</p>
+        </div>
+
+        <form class="login-form">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" placeholder="admin@racesystem.com">
+
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Digite sua senha">
+
+          <div class="form-row between">
+            <label class="checkbox">
+              <input type="checkbox">
+              <span>Manter conectado</span>
+            </label>
+            <a href="#" class="text-link">Esqueci a senha</a>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-block">Entrar</button>
+        </form>
+
+        <div class="demo-access">
+          <p>Links rápidos para navegação visual:</p>
+          <div class="demo-links">
+            <a href="corredores.html">Corredores</a>
+            <a href="equipes.html">Equipes</a>
+            <a href="corridas.html">Próximas corridas</a>
+            <a href="ranking.html">Ranking geral</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

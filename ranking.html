@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking Geral | RaceSsdystem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">RaceSystem</div>
+        <p class="brand-subtitle">Painel administrativo</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="login.html">Login</a>
+        <a href="corredores.html">Corredores</a>
+        <a href="equipes.html">Equipes</a>
+        <a href="corridas.html">Próximas corridas</a>
+        <a href="ranking.html" class="active">Ranking geral</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="page-header">
+        <div>
+          <span class="badge">Desempenho consolidado</span>
+          <h1>Ranking geral das equipes</h1>
+          <p>Layout para apresentação da classificação geral, tempo acumulado, pontuação, vitórias e consistência por equipe.</p>
+        </div>
+        <button class="btn btn-primary">Exportar ranking</button>
+      </header>
+
+      <section class="podium">
+        <article class="podium-card second">
+          <span>2º lugar</span>
+          <h2>Equipe Nitro</h2>
+          <strong>231 pts</strong>
+          <small>Melhor média: 01:13.201</small>
+        </article>
+        <article class="podium-card first">
+          <span>1º lugar</span>
+          <h2>Equipe Alpha</h2>
+          <strong>248 pts</strong>
+          <small>Melhor média: 01:12.483</small>
+        </article>
+        <article class="podium-card third">
+          <span>3º lugar</span>
+          <h2>Equipe Apex</h2>
+          <strong>224 pts</strong>
+          <small>Melhor média: 01:14.002</small>
+        </article>
+      </section>
+
+      <section class="panel-grid two-columns">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Filtros visuais</h2>
+          </div>
+          <form class="form-grid compact">
+            <div>
+              <label for="temporada">Temporada</label>
+              <select id="temporada">
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+              </select>
+            </div>
+            <div>
+              <label for="categoria-ranking">Categoria</label>
+              <select id="categoria-ranking">
+                <option>Geral</option>
+                <option>Profissional</option>
+                <option>Amador</option>
+              </select>
+            </div>
+            <div>
+              <label for="ordem">Ordenação</label>
+              <select id="ordem">
+                <option>Pontuação</option>
+                <option>Tempo total</option>
+                <option>Vitórias</option>
+              </select>
+            </div>
+            <div>
+              <label for="status-filtro">Status</label>
+              <select id="status-filtro">
+                <option>Todas</option>
+                <option>Ativas</option>
+                <option>Em atenção</option>
+              </select>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Indicadores do ranking</h2>
+          </div>
+          <div class="summary-boxes">
+            <div class="summary-item">
+              <span>Total de equipes</span>
+              <strong>16</strong>
+            </div>
+            <div class="summary-item">
+              <span>Maior pontuação</span>
+              <strong>248 pts</strong>
+            </div>
+            <div class="summary-item">
+              <span>Menor tempo médio</span>
+              <strong>01:12.483</strong>
+            </div>
+            <div class="summary-item">
+              <span>Vitórias somadas</span>
+              <strong>37</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Classificação completa</h2>
+          <input type="text" placeholder="Filtrar por equipe">
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Equipe</th>
+                <th>Pontuação</th>
+                <th>Tempo total</th>
+                <th>Vitórias</th>
+                <th>Consistência</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Equipe Alpha</td>
+                <td>248</td>
+                <td>12:54.901</td>
+                <td>11</td>
+                <td><span class="status success">Alta</span></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Equipe Nitro</td>
+                <td>231</td>
+                <td>13:02.110</td>
+                <td>9</td>
+                <td><span class="status success">Alta</span></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Equipe Apex</td>
+                <td>224</td>
+                <td>13:11.887</td>
+                <td>8</td>
+                <td><span class="status info">Boa</span></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Equipe Velocity</td>
+                <td>217</td>
+                <td>13:18.345</td>
+                <td>7</td>
+                <td><span class="status warning">Média</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
