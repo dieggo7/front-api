@@ -1,200 +1,205 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Corredores | RaceSystem</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KERBERUS — Corredores</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-layout">
-    <aside class="sidebar">
-      <div>
-        <div class="brand">RaceSystem</div>
-        <p class="brand-subtitle">Painel administrativo</p>
+
+<div id="sidebar-root"></div>
+
+<div class="main">
+
+  <header class="topbar">
+    <span class="topbar-title">Corredores</span>
+    <div class="topbar-actions">
+      <div class="topbar-user">
+        <div class="avatar">U</div>
+        <span id="topbar-user-name">Usuário</span>
       </div>
+    </div>
+  </header>
 
-      <nav class="sidebar-nav">
-        <a href="login.html">Login</a>
-        <a href="corredores.html" class="active">Corredores</a>
-        <a href="equipes.html">Equipes</a>
-        <a href="corridas.html">Próximas corridas</a>
-        <a href="ranking.html">Ranking geral</a>
-      </nav>
-    </aside>
+  <main class="content">
 
-    <main class="content">
-      <header class="page-header">
-        <div>
-          <span class="badge">Módulo de corredores</span>
-          <h1>Cadastro e acompanhamento de corredores</h1>
-          <p>Representação visual das funções de listagem, criação, edição, exclusão, melhor volta, tempo total, voltas e ranking.</p>
-        </div>
-        <button class="btn btn-primary">Novo corredor</button>
-      </header>
+    <div class="page-header">
+      <h1>Corredores</h1>
+      <p>Gerenciamento de pilotos cadastrados</p>
+    </div>
 
-      <section class="stats-grid">
-        <article class="stat-card">
-          <span>Total cadastrados</span>
-          <strong>128</strong>
-          <small>Base simulada para exibição</small>
-        </article>
-        <article class="stat-card highlight">
-          <span>Melhor volta</span>
-          <strong>01:12.483</strong>
-          <small>Lucas Martins</small>
-        </article>
-        <article class="stat-card">
-          <span>Maior número de voltas</span>
-          <strong>42</strong>
-          <small>Ana Costa</small>
-        </article>
-        <article class="stat-card">
-          <span>Menor tempo total</span>
-          <strong>12:54.901</strong>
-          <small>Equipe Alpha</small>
-        </article>
-      </section>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input type="text" class="form-input" placeholder="Buscar corredor..." id="busca" style="width:240px;" oninput="filtrarCorredores()" />
+      </div>
+      <button class="btn btn-primary" onclick="abrirModal()">+ Novo Corredor</button>
+    </div>
 
-      <section class="panel-grid two-columns">
-        <article class="panel">
-          <div class="panel-header">
-            <h2>Lista de corredores</h2>
-            <input type="text" placeholder="Buscar corredor">
-          </div>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th>Turma / Equipe</th>
-                  <th>Melhor volta</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>#001</td>
-                  <td>Lucas Martins</td>
-                  <td>Equipe Alpha</td>
-                  <td>01:12.483</td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn btn-light">Editar</button>
-                      <button class="btn btn-danger">Excluir</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#002</td>
-                  <td>Ana Costa</td>
-                  <td>Equipe Nitro</td>
-                  <td>01:13.201</td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn btn-light">Editar</button>
-                      <button class="btn btn-danger">Excluir</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#003</td>
-                  <td>Pedro Lima</td>
-                  <td>Equipe Apex</td>
-                  <td>01:14.002</td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn btn-light">Editar</button>
-                      <button class="btn btn-danger">Excluir</button>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>#004</td>
-                  <td>Juliana Rocha</td>
-                  <td>Equipe Velocity</td>
-                  <td>01:15.118</td>
-                  <td>
-                    <div class="table-actions">
-                      <button class="btn btn-light">Editar</button>
-                      <button class="btn btn-danger">Excluir</button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Turma</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-corredores">
+            <tr>
+              <td colspan="4">
+                <div class="empty-state">
+                  <div class="icon">🏎️</div>
+                  <p>Nenhum corredor cadastrado</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        <article class="panel">
-          <div class="panel-header">
-            <h2>Formulário visual</h2>
-            <span class="panel-tag">Sem backend</span>
-          </div>
-          <form class="form-grid">
-            <div>
-              <label for="nome">Nome do corredor</label>
-              <input type="text" id="nome" placeholder="Digite o nome">
-            </div>
-            <div>
-              <label for="turma">Turma / Equipe</label>
-              <input type="text" id="turma" placeholder="Digite a equipe">
-            </div>
-            <div>
-              <label for="categoria">Categoria</label>
-              <select id="categoria">
-                <option>Profissional</option>
-                <option>Amador</option>
-                <option>Júnior</option>
-              </select>
-            </div>
-            <div>
-              <label for="status">Status</label>
-              <select id="status">
-                <option>Ativo</option>
-                <option>Em avaliação</option>
-                <option>Inativo</option>
-              </select>
-            </div>
-            <div class="full-width">
-              <label for="observacoes">Observações</label>
-              <textarea id="observacoes" rows="5" placeholder="Campo visual para observações do corredor"></textarea>
-            </div>
-            <div class="form-actions full-width">
-              <button type="button" class="btn btn-primary">Salvar</button>
-              <button type="button" class="btn btn-light">Cancelar</button>
-            </div>
-          </form>
-        </article>
-      </section>
+  </main>
+</div>
 
-      <section class="panel-grid two-columns">
-        <article class="panel">
-          <div class="panel-header">
-            <h2>Tempo total por corredor</h2>
-          </div>
-          <ul class="ranking-list">
-            <li><span>1. Lucas Martins</span><strong>12:54.901</strong></li>
-            <li><span>2. Ana Costa</span><strong>13:02.110</strong></li>
-            <li><span>3. Pedro Lima</span><strong>13:11.887</strong></li>
-            <li><span>4. Juliana Rocha</span><strong>13:18.345</strong></li>
-          </ul>
-        </article>
+<!-- Modal: Novo / Editar Corredor -->
+<div class="modal-overlay" id="modal-corredor">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Novo Corredor</span>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
 
-        <article class="panel">
-          <div class="panel-header">
-            <h2>Quantidade de voltas</h2>
-          </div>
-          <ul class="ranking-list">
-            <li><span>Ana Costa</span><strong>42 voltas</strong></li>
-            <li><span>Lucas Martins</span><strong>40 voltas</strong></li>
-            <li><span>Pedro Lima</span><strong>39 voltas</strong></li>
-            <li><span>Juliana Rocha</span><strong>37 voltas</strong></li>
-          </ul>
-        </article>
-      </section>
-    </main>
+    <input type="hidden" id="corredor-id" />
+
+    <div class="form-group">
+      <label class="form-label">Nome</label>
+      <input type="text" class="form-input" placeholder="Nome do corredor" id="corredor-nome" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Turma</label>
+      <input type="text" class="form-input" placeholder="Ex: 3A" id="corredor-turma" />
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
+      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCorredor()">Salvar</button>
+    </div>
   </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  renderSidebar('corredores');
+
+  let corredores = []; // será preenchido pela API
+
+  // ── Carregar lista ──────────────────────────────────────────
+  function carregarCorredores() {
+    // TODO: GET /corredores/cadastrados
+    // fetch('/api/corredores/cadastrados')
+    //   .then(r => r.json())
+    //   .then(data => {
+    //     corredores = data;
+    //     renderTabela(corredores);
+    //   });
+  }
+
+  function renderTabela(lista) {
+    const tbody = document.getElementById('tbody-corredores');
+    if (!lista.length) {
+      tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">🏎️</div><p>Nenhum corredor cadastrado</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = lista.map(c => `
+      <tr>
+        <td class="td-muted">#${c.id}</td>
+        <td>${c.nome}</td>
+        <td><span class="badge badge-white">${c.turma}</span></td>
+        <td style="display:flex; gap:8px;">
+          <button class="btn btn-outline" style="padding:5px 12px; font-size:12px;" onclick="editarCorredor(${c.id})">Editar</button>
+          <button class="btn btn-danger"  style="padding:5px 12px; font-size:12px;" onclick="deletarCorredor(${c.id})">Remover</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // ── Filtro ──────────────────────────────────────────────────
+  function filtrarCorredores() {
+    const q = document.getElementById('busca').value.toLowerCase();
+    const filtrado = corredores.filter(c =>
+      c.nome.toLowerCase().includes(q) || c.turma.toLowerCase().includes(q)
+    );
+    renderTabela(filtrado);
+  }
+
+  // ── Modal ───────────────────────────────────────────────────
+  function abrirModal(id) {
+    document.getElementById('corredor-id').value   = id || '';
+    document.getElementById('corredor-nome').value = '';
+    document.getElementById('corredor-turma').value = '';
+    document.getElementById('modal-title').textContent = id ? 'Editar Corredor' : 'Novo Corredor';
+
+    if (id) {
+      const c = corredores.find(x => x.id === id);
+      if (c) {
+        document.getElementById('corredor-nome').value  = c.nome;
+        document.getElementById('corredor-turma').value = c.turma;
+      }
+    }
+
+    document.getElementById('modal-corredor').classList.add('open');
+  }
+
+  function fecharModal() {
+    document.getElementById('modal-corredor').classList.remove('open');
+  }
+
+  function editarCorredor(id) { abrirModal(id); }
+
+  // ── Salvar (POST / PUT) ─────────────────────────────────────
+  function salvarCorredor() {
+    const id    = document.getElementById('corredor-id').value;
+    const nome  = document.getElementById('corredor-nome').value;
+    const turma = document.getElementById('corredor-turma').value;
+
+    if (!nome || !turma) { alert('Preencha nome e turma.'); return; }
+
+    if (id) {
+      // TODO: PUT /corredores/:id
+      // fetch(`/api/corredores/${id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ nome, turma })
+      // }).then(() => { fecharModal(); carregarCorredores(); });
+    } else {
+      // TODO: POST /corredores
+      // fetch('/api/corredores', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ nome, turma })
+      // }).then(() => { fecharModal(); carregarCorredores(); });
+    }
+  }
+
+  // ── Deletar ─────────────────────────────────────────────────
+  function deletarCorredor(id) {
+    if (!confirm('Remover este corredor?')) return;
+    // TODO: DELETE /corredores/:id
+    // fetch(`/api/corredores/${id}`, { method: 'DELETE' })
+    //   .then(() => carregarCorredores());
+  }
+
+  // ── Fechar modal ao clicar fora ─────────────────────────────
+  document.getElementById('modal-corredor').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+  });
+
+  carregarCorredores();
+</script>
+
 </body>
 </html>
