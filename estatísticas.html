@@ -102,36 +102,48 @@
   renderSidebar('estatisticas');
 
   function carregarEstatisticas() {
-    // TODO: GET /corredores/melhor-volta
-    // fetch('/api/corredores/melhor-volta')
-    //   .then(r => r.json()).then(data => {
-    //     document.getElementById('melhor-volta-nome').textContent  = data.nome;
-    //     document.getElementById('melhor-volta-tempo').textContent = data.tempo;
-    //   });
+    // GET /api/corredores/melhor-volta
+    fetch('/api/corredores/melhor-volta')
+      .then(r => r.json())
+      .then(data => {
+        if (data) {
+          document.getElementById('melhor-volta-nome').textContent  = data.nome;
+          document.getElementById('melhor-volta-tempo').textContent = data.tempo + 's';
+        }
+      })
+      .catch(err => console.error(err));
 
-    // TODO: GET /corredores/tempo-total
-    // fetch('/api/corredores/tempo-total')
-    //   .then(r => r.json()).then(lista => {
-    //     const tbody = document.getElementById('tbody-tempo-total');
-    //     tbody.innerHTML = lista.map(r => `
-    //       <tr>
-    //         <td>${r.nome}</td>
-    //         <td class="td-red">${r['SUM(corridas.tempo)']}</td>
-    //       </tr>
-    //     `).join('');
-    //   });
+    // GET /api/corredores/tempo-total
+    fetch('/api/corredores/tempo-total')
+      .then(r => r.json())
+      .then(lista => {
+        const tbody = document.getElementById('tbody-tempo-total');
+        if (lista && lista.length > 0) {
+          tbody.innerHTML = lista.map(r => `
+            <tr>
+              <td>${r.nome}</td>
+              <td class="td-red">${r['SUM(corridas.tempo)'] || '—'}</td>
+            </tr>
+          `).join('');
+        }
+      })
+      .catch(err => console.error(err));
 
-    // TODO: GET /corredores/voltas
-    // fetch('/api/corredores/voltas')
-    //   .then(r => r.json()).then(lista => {
-    //     const tbody = document.getElementById('tbody-voltas');
-    //     tbody.innerHTML = lista.map(r => `
-    //       <tr>
-    //         <td>${r.nome}</td>
-    //         <td>${r['SUM(corridas.voltas)']}</td>
-    //       </tr>
-    //     `).join('');
-    //   });
+    // GET /api/corredores/voltas
+    fetch('/api/corredores/voltas')
+      .then(r => r.json())
+      .then(lista => {
+        const tbody = document.getElementById('tbody-voltas');
+        if (lista && lista.length > 0) {
+          tbody.innerHTML = lista.map(r => `
+            <tr>
+              <td>${r.nome}</td>
+              <td>${r['SUM(corridas.voltas)'] || '—'}</td>
+            </tr>
+          `).join('');
+        }
+      })
+      .catch(err => console.error(err));
   }
 
   carregarEstatisticas();

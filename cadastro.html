@@ -58,14 +58,23 @@
       return;
     }
 
-    // TODO: integrar com POST /users
-    // fetch('/api/users', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ nome, email, senha })
-    // }).then(r => r.json()).then(data => {
-    //   window.location.href = 'login.html';
-    // });
+    fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, senha })
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Erro ao criar usuário');
+      return r.json();
+    })
+    .then(data => {
+      alert('Usuário criado com sucesso!');
+      window.location.href = 'login.html';
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Erro ao criar usuário: ' + err.message);
+    });
   }
 </script>
 

@@ -99,13 +99,16 @@
 
   // ── Carregar lista ──────────────────────────────────────────
   function carregarCorredores() {
-    // TODO: GET /corredores/cadastrados
-    // fetch('/api/corredores/cadastrados')
-    //   .then(r => r.json())
-    //   .then(data => {
-    //     corredores = data;
-    //     renderTabela(corredores);
-    //   });
+    fetch('/api/corredores/cadastrados')
+      .then(r => r.json())
+      .then(data => {
+        corredores = data || [];
+        renderTabela(corredores);
+      })
+      .catch(err => {
+        console.error('Erro ao carregar corredores:', err);
+        alert('Erro ao carregar corredores');
+      });
   }
 
   function renderTabela(lista) {
@@ -165,23 +168,49 @@
     const id    = document.getElementById('corredor-id').value;
     const nome  = document.getElementById('corredor-nome').value;
     const turma = document.getElementById('corredor-turma').value;
+    const senha = '123456'; // senha padrão
 
     if (!nome || !turma) { alert('Preencha nome e turma.'); return; }
 
     if (id) {
-      // TODO: PUT /corredores/:id
-      // fetch(`/api/corredores/${id}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ nome, turma })
-      // }).then(() => { fecharModal(); carregarCorredores(); });
+      fetch(`/api/corredores/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, turma, senha })
+      })
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao atualizar');
+        return r.json();
+      })
+      .then(() => { 
+        alert('Corredor atualizado!');
+        fecharModal(); 
+        carregarCorredores(); 
+      })
+      .catch(err => alert('Erro: ' + err.message));
     } else {
-      // TODO: POST /corredores
-      // fetch('/api/corredores', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ nome, turma })
-      // }).then(() => { fecharModal(); carregarCorredores(); });
+      fetch('/api/corredores', {
+        method: 'POST',
+    fetch(`/api/corredores/${id}`, { method: 'DELETE' })
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao deletar');
+        return r.json();
+      })
+      .then(() => {
+        alert('Corredor removido!');
+        carregarCorredores();
+      })
+      .catch(err => alert('Erro: ' + err.message
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao criar');
+        return r.json();
+      })
+      .then(() => { 
+        alert('Corredor criado!');
+        fecharModal(); 
+        carregarCorredores(); 
+      })
+      .catch(err => alert('Erro: ' + err.message));
     }
   }
 

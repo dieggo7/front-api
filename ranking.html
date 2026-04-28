@@ -63,10 +63,10 @@
   renderSidebar('ranking');
 
   function carregarRanking() {
-    // TODO: GET /corredores/ranking
-    // fetch('/api/corredores/ranking')
-    //   .then(r => r.json())
-    //   .then(data => renderRanking(data));
+    fetch('/api/corredores/ranking')
+      .then(r => r.json())
+      .then(data => renderRanking(data || []))
+      .catch(err => console.error('Erro ao carregar ranking:', err));
   }
 
   function renderRanking(lista) {

@@ -87,28 +87,36 @@
 <script>
   renderSidebar('dashboard');
 
-  // TODO: carregar dados reais do backend
+  // Carregar dados reais do backend
 
-  // Melhor volta: GET /corredores/melhor-volta
-  // fetch('/api/corredores/melhor-volta')
-  //   .then(r => r.json()).then(data => {
-  //     document.getElementById('stat-melhor-tempo').textContent = data.tempo;
-  //     document.getElementById('stat-melhor-nome').textContent  = data.nome;
-  //   });
+  // Melhor volta: GET /api/corredores/melhor-volta
+  fetch('/api/corredores/melhor-volta')
+    .then(r => r.json())
+    .then(data => {
+      if (data) {
+        document.getElementById('stat-melhor-tempo').textContent = data.tempo + 's';
+        document.getElementById('stat-melhor-nome').textContent  = data.nome;
+      }
+    })
+    .catch(err => console.error(err));
 
-  // Ranking top 5: GET /corredores/ranking  (pegar os primeiros 5)
-  // fetch('/api/corredores/ranking')
-  //   .then(r => r.json()).then(rows => {
-  //     const tbody = document.getElementById('tbody-ranking');
-  //     tbody.innerHTML = rows.slice(0,5).map((r, i) => `
-  //       <tr>
-  //         <td><span class="rank-num ${i < 3 ? 'top' : ''}">${i+1}</span></td>
-  //         <td>${r.nome}</td>
-  //         <td><span class="badge badge-white">${r.turma}</span></td>
-  //         <td class="td-red">${r['SUM(corridas.tempo)']}</td>
-  //       </tr>
-  //     `).join('');
-  //   });
+  // Ranking top 5: GET /api/corredores/ranking  (pegar os primeiros 5)
+  fetch('/api/corredores/ranking')
+    .then(r => r.json())
+    .then(rows => {
+      if (rows && rows.length > 0) {
+        const tbody = document.getElementById('tbody-ranking');
+        tbody.innerHTML = rows.slice(0,5).map((r, i) => `
+          <tr>
+            <td><span class="rank-num ${i < 3 ? 'top' : ''}">${i+1}</span></td>
+            <td>${r.nome}</td>
+            <td><span class="badge badge-white">${r.turma}</span></td>
+            <td class="td-red">${r['SUM(corridas.tempo)'] || '—'}</td>
+          </tr>
+        `).join('');
+      }
+    })
+    .catch(err => console.error(err));
 </script>
 
 </body>

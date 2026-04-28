@@ -52,12 +52,25 @@
       return;
     }
 
-    // TODO: integrar com POST /users ou endpoint de autenticação
-    // fetch('/api/login', { method: 'POST', body: JSON.stringify({ email, senha }) })
-    //   .then(r => r.json()).then(data => { ... });
-
-    // Redirecionar após login bem-sucedido:
-    // window.location.href = 'dashboard.html';
+    fetch('/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha })
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Email ou senha incorretos');
+      return r.json();
+    })
+    .then(data => {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      alert('Login realizado com sucesso!');
+      window.location.href = 'dashboard.html';
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Erro ao fazer login: ' + err.message);
+    });
   }
 </script>
 
