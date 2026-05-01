@@ -97,146 +97,145 @@
 
   let corredores = []; // será preenchido pela API
 
-// // ── Carregar lista ──────────────────────────────────────────
-// function carregarCorredores() {
-//   fetch('/api/corredores/cadastrados')
-//     .then(r => r.json())
-//     .then(data => {
-//       corredores = data || [];
-//       renderTabela(corredores);
-//     })
-//     .catch(err => {
-//       console.error('Erro ao carregar corredores:', err);
-//       alert('Erro ao carregar corredores');
-//     });
-// }
+ // ── Carregar lista ──────────────────────────────────────────
+//function carregarCorredores() {
+//  fetch('/api/corredores/cadastrados')
+//    .then(r => r.json())
+//    .then(data => {
+//      corredores = data || [];
+//      renderTabela(corredores);
+//    })
+//    .catch(err => {
+//      console.error('Erro ao carregar corredores:', err);
+//      alert('Erro ao carregar corredores');
+//    });
+//}
 
-  function renderTabela(lista) {
-    const tbody = document.getElementById('tbody-corredores');
-    if (!lista.length) {
-      tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">🏎️</div><p>Nenhum corredor cadastrado</p></div></td></tr>`;
-      return;
-    }
-    tbody.innerHTML = lista.map(c => `
-      <tr>
-        <td class="td-muted">#${c.id}</td>
-        <td>${c.nome}</td>
-        <td><span class="badge badge-white">${c.turma}</span></td>
-        <td style="display:flex; gap:8px;">
-          <button class="btn btn-outline" style="padding:5px 12px; font-size:12px;" onclick="editarCorredor(${c.id})">Editar</button>
-          <button class="btn btn-danger"  style="padding:5px 12px; font-size:12px;" onclick="deletarCorredor(${c.id})">Remover</button>
-        </td>
-      </tr>
-    `).join('');
-  }
+ function renderTabela(lista) {
+   const tbody = document.getElementById('tbody-corredores');
+   if (!lista.length) {
+     tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">🏎️</div><p>Nenhum corredor cadastrado</p></div></td></tr>`;
+     return;
+   }
+   tbody.innerHTML = lista.map(c => `
+     <tr>
+       <td class="td-muted">#${c.id}</td>
+       <td>${c.nome}</td>
+       <td><span class="badge badge-white">${c.turma}</span></td>
+       <td style="display:flex; gap:8px;">
+         <button class="btn btn-outline" style="padding:5px 12px; font-size:12px;" onclick="editarCorredor(${c.id})">Editar</button>
+         <button class="btn btn-danger"  style="padding:5px 12px; font-size:12px;" onclick="deletarCorredor(${c.id})">Remover</button>
+       </td>
+     </tr>
+   `).join('');
+ }
 
-  // ── Filtro ──────────────────────────────────────────────────
-  function filtrarCorredores() {
-    const q = document.getElementById('busca').value.toLowerCase();
-    const filtrado = corredores.filter(c =>
-      c.nome.toLowerCase().includes(q) || c.turma.toLowerCase().includes(q)
-    );
-    renderTabela(filtrado);
-  }
+ // ── Filtro ──────────────────────────────────────────────────
+ function filtrarCorredores() {
+   const q = document.getElementById('busca').value.toLowerCase();
+   const filtrado = corredores.filter(c =>
+     c.nome.toLowerCase().includes(q) || c.turma.toLowerCase().includes(q)
+   );
+   renderTabela(filtrado);
+ }
 
-  // ── Modal ───────────────────────────────────────────────────
-  function abrirModal(id) {
-    document.getElementById('corredor-id').value   = id || '';
-    document.getElementById('corredor-nome').value = '';
-    document.getElementById('corredor-turma').value = '';
-    document.getElementById('modal-title').textContent = id ? 'Editar Corredor' : 'Novo Corredor';
+ // ── Modal ───────────────────────────────────────────────────
+ function abrirModal(id) {
+   document.getElementById('corredor-id').value   = id || '';
+   document.getElementById('corredor-nome').value = '';
+   document.getElementById('corredor-turma').value = '';
+   document.getElementById('modal-title').textContent = id ? 'Editar Corredor' : 'Novo Corredor';
 
-    if (id) {
-      const c = corredores.find(x => x.id === id);
-      if (c) {
-        document.getElementById('corredor-nome').value  = c.nome;
-        document.getElementById('corredor-turma').value = c.turma;
-      }
-    }
+   if (id) {
+     const c = corredores.find(x => x.id === id);
+     if (c) {
+       document.getElementById('corredor-nome').value  = c.nome;
+       document.getElementById('corredor-turma').value = c.turma;
+     }
+   }
 
-    document.getElementById('modal-corredor').classList.add('open');
-  }
+   document.getElementById('modal-corredor').classList.add('open');
+ }
 
-  function fecharModal() {
-    document.getElementById('modal-corredor').classList.remove('open');
-  }
+ function fecharModal() {
+   document.getElementById('modal-corredor').classList.remove('open');
+ }
 
-  function editarCorredor(id) { abrirModal(id); }
+ function editarCorredor(id) { abrirModal(id); }
 
-  // ── Salvar (POST / PUT) ─────────────────────────────────────
-  function salvarCorredor() {
-    const id    = document.getElementById('corredor-id').value;
-    const nome  = document.getElementById('corredor-nome').value;
-    const turma = document.getElementById('corredor-turma').value;
-    const senha = '123456'; // senha padrão
+ // ── Salvar (POST / PUT) ─────────────────────────────────────
+ function salvarCorredor() {
+   const id    = document.getElementById('corredor-id').value;
+   const nome  = document.getElementById('corredor-nome').value;
+   const turma = document.getElementById('corredor-turma').value;
+   const senha = '123456'; // senha padrão
 
-    if (!nome || !turma) { alert('Preencha nome e turma.'); return; }
+   if (!nome || !turma) { alert('Preencha nome e turma.'); return; }
 
-    if (id) {
-      fetch(`/api/corredores/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, turma, senha })
-      })
-      .then(r => {
-        if (!r.ok) throw new Error('Erro ao atualizar');
-        return r.json();
-      })
-      .then(() => { 
-        alert('Corredor atualizado!');
-        fecharModal(); 
-        carregarCorredores(); 
-      })
-      .catch(err => alert('Erro: ' + err.message));
-    } else {
-      fetch('/api/corredores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, turma, senha })
-      })
-    }
-  }
+   if (id) {
+     fetch(`/api/corredores/${id}`, {
+       method: 'PUT',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ nome, turma, senha })
+     })
+     .then(r => {
+       if (!r.ok) throw new Error('Erro ao atualizar');
+       return r.json();
+     })
+     .then(() => { 
+       alert('Corredor atualizado!');
+       fecharModal(); 
+       carregarCorredores(); 
+     })
+     .catch(err => alert('Erro: ' + err.message));
+   } else {
+     fetch('/api/corredores', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ nome, turma, senha })
+     })
+   }
+ }
 
-  // ── Deletar ─────────────────────────────────────────────────
-  function deletarCorredor(id) {
-    if (!confirm('Remover este corredor?')) return;
-    fetch(`/api/corredores/${id}`, { method: 'DELETE' })
-      .then(r => {
-        if (!r.ok) throw new Error('Erro ao deletar');
-        return r.json();
-      })
-      .then(() => {
-        alert('Corredor removido!');
-        carregarCorredores();
-      })
-      .catch(err => alert('Erro: ' + err.message));
-      then(r => {
-        if (!r.ok) throw new Error('Erro ao criar');
-        return r.json();
-      })
-      .then(() => { 
-        alert('Corredor criado!');
-        fecharModal(); 
-        carregarCorredores(); 
-      })
-      .catch(err => alert('Erro: ' + err.message));
-    }
+ // ── Deletar ─────────────────────────────────────────────────
+ function deletarCorredor(id) {
+   if (!confirm('Remover este corredor?')) return;
+   fetch(`/api/corredores/${id}`, { method: 'DELETE' })
+     .then(r => {
+       if (!r.ok) throw new Error('Erro ao deletar');
+       return r.json();
+     })
+     .then(() => {
+       alert('Corredor removido!');
+       carregarCorredores();
+     })
+     .catch(err => alert('Erro: ' + err.message));
+     then(r => {
+       if (!r.ok) throw new Error('Erro ao criar');
+       return r.json();
+     })
+     .then(() => { 
+       alert('Corredor criado!');
+       fecharModal(); 
+       carregarCorredores(); 
+     })
+     .catch(err => alert('Erro: ' + err.message));
+   }
 
-  // ── Deletar ─────────────────────────────────────────────────
-  function deletarCorredor(id) {
-    if (!confirm('Remover este corredor?')) return;
-    // TODO: DELETE /corredores/:id
-    // fetch(`/api/corredores/${id}`, { method: 'DELETE' })
-    //   .then(() => carregarCorredores());
-  }
+ // ── Deletar ─────────────────────────────────────────────────
+ function deletarCorredor(id) {
+   if (!confirm('Remover este corredor?')) return;
+   // TODO: DELETE /corredores/:id
+   // fetch(`/api/corredores/${id}`, { method: 'DELETE' })
+   //   .then(() => carregarCorredores());
+ }
 
-  // ── Fechar modal ao clicar fora ─────────────────────────────
-  document.getElementById('modal-corredor').addEventListener('click', function(e) {
-    if (e.target === this) fecharModal();
-  });
+ // ── Fechar modal ao clicar fora ─────────────────────────────
+ document.getElementById('modal-corredor').addEventListener('click', function(e) {
+   if (e.target === this) fecharModal();
+ });
 
-  carregarCorredores();
+ carregarCorredores();
 </script>
 
 </body>
-</html>
