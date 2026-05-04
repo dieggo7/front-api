@@ -61,6 +61,7 @@
 <script src="sidebar.js"></script>
 <script>
   renderSidebar('ranking');
+  setupChangeUserModal();
 
   function carregarRanking() {
     fetch('/api/corredores/ranking')
