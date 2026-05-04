@@ -33,7 +33,12 @@
 
     <div class="form-group">
       <label class="form-label">Senha</label>
-      <input type="password" class="form-input" placeholder="••••••••" id="senha" />
+      <input type="password" class="form-input" placeholder="••••••••" id="senha" autocomplete="new-password" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Confirmar Senha</label>
+      <input type="password" class="form-input" placeholder="••••••••" id="confirm-senha" autocomplete="new-password" />
     </div>
 
     <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" onclick="handleCadastro()">
@@ -49,12 +54,18 @@
 
 <script>
   function handleCadastro() {
-    const nome  = document.getElementById('nome').value;
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
+    const nome         = document.getElementById('nome').value.trim();
+    const email        = document.getElementById('email').value.trim();
+    const senha        = document.getElementById('senha').value;
+    const confirmSenha = document.getElementById('confirm-senha').value;
 
-    if (!nome || !email || !senha) {
+    if (!nome || !email || !senha || !confirmSenha) {
       alert('Preencha todos os campos.');
+      return;
+    }
+
+    if (senha !== confirmSenha) {
+      alert('As senhas não coincidem.');
       return;
     }
 
