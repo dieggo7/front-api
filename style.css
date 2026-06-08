@@ -2,16 +2,16 @@
 
 /* ── VARIABLES ── */
 :root {
-  --red: #ff1a2d;
-  --red-dark: #b71324;
+  --red: #B71C24;
+  --red-dark: #7A1015;
   --white: #f4f4f4;
   --black: #050505;
   --surface: #10101b;
   --surface-strong: #14141f;
   --border: rgba(255,255,255,0.08);
   --muted: #9ba1aa;
-  --neon: #ff1a2d;
-  --neon-soft: rgba(255,26,45,0.16);
+  --accent-soft: rgba(183,28,36,0.16);
+  --accent-soft-strong: rgba(183,28,36,0.24);
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Barlow', sans-serif;
 }
@@ -31,9 +31,9 @@ body {
   font-size: 15px;
   line-height: 1.5;
   color: var(--white);
-  background: radial-gradient(circle at top left, rgba(255,26,45,0.18), transparent 20%),
-              radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 18%),
-              linear-gradient(180deg, #040405 0%, #0a0a11 100%);
+  background: radial-gradient(circle at top left, rgba(183,28,36,0.12), transparent 26%),
+              radial-gradient(circle at bottom right, rgba(255,255,255,0.04), transparent 20%),
+              linear-gradient(180deg, #030305 0%, #0a0a11 100%);
   overflow-x: hidden;
   position: relative;
 }
@@ -91,7 +91,7 @@ ul {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--white);
-  text-shadow: 0 0 22px rgba(255,26,45,0.28);
+  text-shadow: 0 0 16px rgba(183,28,36,0.18);
 }
 .sidebar-logo .logo-mark span {
   color: var(--red);
@@ -130,12 +130,12 @@ ul {
 }
 .nav-item:hover {
   color: #fff;
-  background: rgba(255,26,45,0.12);
+  background: rgba(183,28,36,0.12);
 }
 .nav-item.active {
   color: #fff;
-  background: rgba(255,26,45,0.2);
-  box-shadow: 0 0 24px rgba(255,26,45,0.2);
+  background: rgba(183,28,36,0.16);
+  box-shadow: 0 0 18px rgba(183,28,36,0.14);
 }
 .nav-item.active::before {
   content: '';
@@ -144,7 +144,7 @@ ul {
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, rgba(255,26,45,0.9), rgba(255,95,105,0.4));
+  background: linear-gradient(180deg, rgba(183,28,36,0.85), rgba(183,28,36,0.35));
   border-radius: 0 100px 100px 0;
 }
 .nav-icon {
@@ -212,8 +212,8 @@ ul {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff1a2d, #ff6b7f);
-  box-shadow: 0 0 20px rgba(255,26,45,0.28);
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  box-shadow: 0 0 18px rgba(183,28,36,0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,18 +249,11 @@ ul {
   position: relative;
   background: rgba(15,15,24,0.96);
   border: 1px solid rgba(255,255,255,0.08);
-  border-left: 4px solid rgba(255,26,45,0.9);
+  border-left: 4px solid rgba(183,28,36,0.9);
   border-radius: 22px;
   padding: 28px;
   box-shadow: 0 28px 90px rgba(0,0,0,0.38);
   overflow: hidden;
-}
-.card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(135deg, transparent 0%, rgba(255,26,45,0.08) 20%, transparent 50%);
 }
 .card:hover {
   transform: translateY(-3px);
@@ -402,13 +395,13 @@ tbody td {
   transform: translateY(0);
 }
 .btn-primary {
-  background: linear-gradient(135deg, #ff1a2d, #ff5c74);
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
   color: #fff;
-  box-shadow: 0 16px 44px rgba(255,26,45,0.28), inset 0 0 0 1px rgba(255,255,255,0.12);
+  box-shadow: 0 16px 44px rgba(183,28,36,0.2), inset 0 0 0 1px rgba(255,255,255,0.12);
   animation: pulseGlow 3.2s ease infinite;
 }
 .btn-primary:hover {
-  box-shadow: 0 22px 66px rgba(255,26,45,0.34), inset 0 0 0 1px rgba(255,255,255,0.14);
+  box-shadow: 0 22px 66px rgba(183,28,36,0.24), inset 0 0 0 1px rgba(255,255,255,0.14);
 }
 .btn-outline {
   background: transparent;
@@ -420,9 +413,9 @@ tbody td {
   color: var(--red);
 }
 .btn-danger {
-  background: rgba(192,57,43,0.1);
-  border: 1px solid #c0392b;
-  color: #c0392b;
+  background: rgba(183,28,36,0.12);
+  border: 1px solid var(--red);
+  color: var(--red);
 }
 
 /* ── FORM ── */
@@ -451,8 +444,8 @@ tbody td {
 }
 .form-input:focus {
   outline: none;
-  border-color: var(--neon);
-  box-shadow: 0 0 0 4px rgba(255,26,45,0.16);
+  border-color: var(--red);
+  box-shadow: 0 0 0 4px rgba(183,28,36,0.16);
 }
 .form-input::placeholder {
   color: var(--muted);
@@ -505,9 +498,9 @@ tbody td {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top left, rgba(255,26,45,0.22), transparent 18%),
-              radial-gradient(circle at bottom right, rgba(255,255,255,0.06), transparent 18%),
-              linear-gradient(180deg, #040405 0%, #0c0b11 100%);
+  background: radial-gradient(circle at top left, rgba(183,28,36,0.12), transparent 24%),
+              radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 22%),
+              linear-gradient(180deg, #030305 0%, #0c0b11 100%);
 }
 .auth-box {
   width: 100%;
@@ -525,8 +518,8 @@ tbody td {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,26,45,0.14), transparent 24%),
-              radial-gradient(circle at top right, rgba(255,26,45,0.14), transparent 22%);
+  background: linear-gradient(135deg, rgba(183,28,36,0.10), transparent 30%),
+              radial-gradient(circle at top right, rgba(183,28,36,0.10), transparent 28%);
   pointer-events: none;
 }
 .auth-box::after {
@@ -549,7 +542,7 @@ tbody td {
   font-weight: 900;
   letter-spacing: 4px;
   text-transform: uppercase;
-  text-shadow: 0 0 24px rgba(255,26,45,0.24);
+  text-shadow: 0 0 20px rgba(183,28,36,0.16);
 }
 .auth-logo .logo-mark span {
   color: var(--red);
@@ -681,9 +674,9 @@ tbody td {
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 18px rgba(255,26,45,0.2);
+    box-shadow: 0 0 16px rgba(183,28,36,0.14);
   }
   50% {
-    box-shadow: 0 0 28px rgba(255,26,45,0.32);
+    box-shadow: 0 0 24px rgba(183,28,36,0.22);
   }
 }

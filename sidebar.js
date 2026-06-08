@@ -58,7 +58,7 @@ function setupChangeUserModal() {
         
         <div class="form-group">
           <label class="form-label">Usuário Atual</label>
-          <div style="padding: 10px; background: #f5f5f5; border-radius: 4px; color: #666;">
+          <div style="padding: 10px; background: rgba(255,255,255,0.06); border-radius: 4px; color: var(--white);">
             <strong>${usuario.nome || 'Não identificado'}</strong><br>
             <small>${usuario.email || ''}</small>
           </div>
