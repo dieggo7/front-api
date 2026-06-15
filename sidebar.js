@@ -5,6 +5,7 @@ function renderSidebar(activePage) {
   const links = [
     { href: 'dashboard.html',   icon: '◈', label: 'Dashboard',    id: 'dashboard'   },
     { href: 'corredores.html',  icon: '◉', label: 'Corredores',   id: 'corredores'  },
+    { href: 'corridas.html',    icon: '⏱', label: 'Corridas',     id: 'corridas'    },
     { href: 'ranking.html',     icon: '◆', label: 'Ranking',       id: 'ranking'     },
     { href: 'estatisticas.html',icon: '◇', label: 'Estatísticas', id: 'estatisticas'},
   ];

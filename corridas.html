@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KERBERUS — Corridas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="sidebar-root"></div>
+
+<div class="main">
+
+  <header class="topbar">
+    <span class="topbar-title">Corridas</span>
+    <div class="topbar-actions">
+      <div class="topbar-user">
+        <div class="avatar">U</div>
+        <span id="topbar-user-name">Usuário</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <div class="page-header">
+      <h1>Corridas</h1>
+      <p>Registro de voltas e tempos dos corredores</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input type="text" class="form-input" placeholder="Buscar por corredor..." id="busca" style="width:240px;" oninput="filtrarCorridas()" />
+      </div>
+      <button class="btn btn-primary" onclick="abrirModal()">+ Nova Corrida</button>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Corredor</th>
+              <th>Turma</th>
+              <th>Voltas</th>
+              <th>Tempo</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-corridas">
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="icon">⏱️</div>
+                  <p>Nenhuma corrida cadastrada</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal: Nova Corrida -->
+<div class="modal-overlay" id="modal-corrida">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Nova Corrida</span>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Corredor</label>
+      <select class="form-input" id="corrida-corredor">
+        <option value="">Selecione um corredor</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Voltas</label>
+      <input type="number" class="form-input" placeholder="Quantidade de voltas" id="corrida-voltas" min="0" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tempo</label>
+      <input type="number" step="0.01" class="form-input" placeholder="Tempo (ex: 12.34)" id="corrida-tempo" min="0" />
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
+      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCorrida()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  renderSidebar('corridas');
+  setupChangeUserModal();
+
+  let corridas = [];   // será preenchido pela API
+  let corredores = []; // usado para popular o select do modal
+
+  // ── Carregar lista de corridas ─────────────────────────────
+  function carregarCorridas() {
+    fetch('/api/corredores/corridas')
+      .then(r => r.json())
+      .then(data => {
+        corridas = data || [];
+        renderTabela(corridas);
+      })
+      .catch(err => {
+        console.error('Erro ao carregar corridas:', err);
+      });
+  }
+
+  function renderTabela(lista) {
+    const tbody = document.getElementById('tbody-corridas');
+    if (!lista.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">⏱️</div><p>Nenhuma corrida cadastrada</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = lista.map(c => `
+      <tr>
+        <td class="td-muted">#${c.id}</td>
+        <td>${c.corredor_nome ?? '—'}</td>
+        <td><span class="badge badge-white">${c.corredor_turma ?? '—'}</span></td>
+        <td>${c.voltas}</td>
+        <td>${c.tempo}</td>
+      </tr>
+    `).join('');
+  }
+
+  // ── Filtro ──────────────────────────────────────────────────
+  function filtrarCorridas() {
+    const q = document.getElementById('busca').value.toLowerCase();
+    const filtrado = corridas.filter(c =>
+      (c.corredor_nome || '').toLowerCase().includes(q) ||
+      (c.corredor_turma || '').toLowerCase().includes(q)
+    );
+    renderTabela(filtrado);
+  }
+
+  // ── Carregar corredores para o select do modal ─────────────
+  function carregarCorredoresSelect() {
+    fetch('/api/corredores')
+      .then(r => r.json())
+      .then(data => {
+        corredores = data || [];
+        const select = document.getElementById('corrida-corredor');
+        select.innerHTML = '<option value="">Selecione um corredor</option>' +
+          corredores.map(c => `<option value="${c.id}">${c.nome} — ${c.turma}</option>`).join('');
+      })
+      .catch(err => {
+        console.error('Erro ao carregar corredores:', err);
+      });
+  }
+
+  // ── Modal ───────────────────────────────────────────────────
+  function abrirModal() {
+    document.getElementById('corrida-corredor').value = '';
+    document.getElementById('corrida-voltas').value = '';
+    document.getElementById('corrida-tempo').value = '';
+    carregarCorredoresSelect();
+    document.getElementById('modal-corrida').classList.add('open');
+  }
+
+  function fecharModal() {
+    document.getElementById('modal-corrida').classList.remove('open');
+  }
+
+  // ── Salvar (POST) ───────────────────────────────────────────
+  function salvarCorrida() {
+    const corredores_id = document.getElementById('corrida-corredor').value;
+    const voltas = document.getElementById('corrida-voltas').value;
+    const tempo = document.getElementById('corrida-tempo').value;
+
+    if (!corredores_id || !voltas || !tempo) {
+      alert('Selecione o corredor e preencha voltas e tempo.');
+      return;
+    }
+
+    fetch('/api/corredores/cadastro/corridas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tempo: parseFloat(tempo),
+        voltas: parseInt(voltas, 10),
+        corredores_id: parseInt(corredores_id, 10)
+      })
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Erro ao cadastrar corrida');
+      return r.json();
+    })
+    .then(() => {
+      alert('Corrida cadastrada com sucesso!');
+      fecharModal();
+      carregarCorridas();
+    })
+    .catch(err => alert('Erro: ' + err.message));
+  }
+
+  // ── Fechar modal ao clicar fora ─────────────────────────────
+  document.getElementById('modal-corrida').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+  });
+
+  carregarCorridas();
+</script>
+
+</body>
+</html>
