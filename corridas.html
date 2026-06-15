@@ -29,54 +29,79 @@
       <p>Registro de voltas e tempos dos corredores</p>
     </div>
 
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Corridas</div>
+        <div class="stat-value" id="stat-total-corridas">—</div>
+        <div class="stat-sub">realizadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Participações</div>
+        <div class="stat-value" id="stat-total-participacoes">—</div>
+        <div class="stat-sub">registradas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Melhor Tempo</div>
+        <div class="stat-value red" id="stat-melhor-tempo">—</div>
+        <div class="stat-sub" id="stat-melhor-piloto">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tempo Médio</div>
+        <div class="stat-value" id="stat-tempo-medio">—</div>
+        <div class="stat-sub">geral</div>
+      </div>
+    </div>
+
+    <!-- Pódium -->
+    <div class="card">
+      <div class="card-title">Pódium — Média de Tempo por Piloto</div>
+      <div class="podium" id="podium-container">
+        <div class="empty-state" style="width:100%;">
+          <div class="icon">🏆</div>
+          <p>Sem dados suficientes para o pódium ainda</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
     <div class="toolbar">
       <div class="toolbar-left">
-        <input type="text" class="form-input" placeholder="Buscar por corredor..." id="busca" style="width:240px;" oninput="filtrarCorridas()" />
+        <input type="text" class="form-input" placeholder="Buscar por corrida ou corredor..." id="busca" style="width:280px;" oninput="filtrarCorridas()" />
       </div>
       <button class="btn btn-primary" onclick="abrirModal()">+ Nova Corrida</button>
     </div>
 
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Corredor</th>
-              <th>Turma</th>
-              <th>Voltas</th>
-              <th>Tempo</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-corridas">
-            <tr>
-              <td colspan="5">
-                <div class="empty-state">
-                  <div class="icon">⏱️</div>
-                  <p>Nenhuma corrida cadastrada</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Dashboard: uma seção por corrida -->
+    <div id="lista-corridas">
+      <div class="card">
+        <div class="empty-state">
+          <div class="icon">⏱️</div>
+          <p>Nenhuma corrida cadastrada</p>
+        </div>
       </div>
     </div>
 
   </main>
 </div>
 
-<!-- Modal: Nova Corrida -->
+<!-- Modal: Nova Corrida / Adicionar Piloto -->
 <div class="modal-overlay" id="modal-corrida">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">Nova Corrida</span>
+      <span class="modal-title" id="modal-corrida-title">Nova Corrida</span>
       <button class="modal-close" onclick="fecharModal()">✕</button>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Corredor</label>
+      <label class="form-label">Nome da Corrida</label>
+      <input type="text" class="form-input" placeholder="Ex: Corrida 1" id="corrida-nome" />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Piloto</label>
       <select class="form-input" id="corrida-corredor">
-        <option value="">Selecione um corredor</option>
+        <option value="">Selecione um piloto</option>
       </select>
     </div>
 
@@ -102,7 +127,7 @@
   renderSidebar('corridas');
   setupChangeUserModal();
 
-  let corridas = [];   // será preenchido pela API
+  let corridas = [];   // todas as participações (linhas da tabela corridas)
   let corredores = []; // usado para popular o select do modal
 
   // ── Carregar lista de corridas ─────────────────────────────
@@ -111,38 +136,150 @@
       .then(r => r.json())
       .then(data => {
         corridas = data || [];
-        renderTabela(corridas);
+        renderGrupos(corridas);
+        renderStats(corridas);
       })
       .catch(err => {
         console.error('Erro ao carregar corridas:', err);
       });
   }
 
-  function renderTabela(lista) {
-    const tbody = document.getElementById('tbody-corridas');
+  // ── Agrupar participações por nome da corrida ──────────────
+  function agruparPorCorrida(lista) {
+    const grupos = {};
+    lista.forEach(c => {
+      const nome = c.nome || 'Sem nome';
+      if (!grupos[nome]) grupos[nome] = [];
+      grupos[nome].push(c);
+    });
+    return grupos;
+  }
+
+  // ── Dashboard: uma seção por corrida, com seus participantes ─
+  function renderGrupos(lista) {
+    const container = document.getElementById('lista-corridas');
+
     if (!lista.length) {
-      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">⏱️</div><p>Nenhuma corrida cadastrada</p></div></td></tr>`;
+      container.innerHTML = `
+        <div class="card">
+          <div class="empty-state">
+            <div class="icon">⏱️</div>
+            <p>Nenhuma corrida cadastrada</p>
+          </div>
+        </div>`;
       return;
     }
-    tbody.innerHTML = lista.map(c => `
-      <tr>
-        <td class="td-muted">#${c.id}</td>
-        <td>${c.corredor_nome ?? '—'}</td>
-        <td><span class="badge badge-white">${c.corredor_turma ?? '—'}</span></td>
-        <td>${c.voltas}</td>
-        <td>${c.tempo}</td>
-      </tr>
-    `).join('');
+
+    const grupos = agruparPorCorrida(lista);
+    const nomes = Object.keys(grupos).sort((a, b) =>
+      a.localeCompare(b, 'pt-BR', { numeric: true })
+    );
+
+    container.innerHTML = nomes.map(nome => {
+      const participantes = grupos[nome];
+      const cards = participantes.map(c => `
+        <div class="race-card">
+          <div class="race-card-id">Participação #${c.id}</div>
+          <div class="race-card-name">${c.corredor_nome ?? '—'}</div>
+          <span class="badge badge-white">${c.corredor_turma ?? '—'}</span>
+          <div class="race-card-stats">
+            <div>
+              <div class="race-card-stat-label">Voltas</div>
+              <div class="race-card-stat-value">${c.voltas}</div>
+            </div>
+            <div>
+              <div class="race-card-stat-label">Tempo</div>
+              <div class="race-card-stat-value red">${c.tempo}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="card">
+          <div class="toolbar" style="margin-bottom:16px;">
+            <div class="card-title" style="margin:0;">${nome}</div>
+            <button class="btn btn-outline" onclick="abrirModal('${nome.replace(/'/g, "\\'")}')">+ Adicionar Piloto</button>
+          </div>
+          <div class="race-grid">${cards}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── Stat cards do topo ──────────────────────────────────────
+  function renderStats(lista) {
+    const grupos = agruparPorCorrida(lista);
+    document.getElementById('stat-total-corridas').textContent = Object.keys(grupos).length;
+    document.getElementById('stat-total-participacoes').textContent = lista.length;
+
+    if (lista.length) {
+      const tempos = lista.map(c => parseFloat(c.tempo)).filter(t => !isNaN(t));
+      const melhor = lista.reduce((min, c) =>
+        parseFloat(c.tempo) < parseFloat(min.tempo) ? c : min, lista[0]);
+      document.getElementById('stat-melhor-tempo').textContent = melhor.tempo;
+      document.getElementById('stat-melhor-piloto').textContent =
+        `${melhor.corredor_nome ?? '—'} · ${melhor.nome ?? ''}`;
+
+      const media = tempos.reduce((a, b) => a + b, 0) / tempos.length;
+      document.getElementById('stat-tempo-medio').textContent = media.toFixed(2);
+    } else {
+      document.getElementById('stat-melhor-tempo').textContent = '—';
+      document.getElementById('stat-melhor-piloto').textContent = '—';
+      document.getElementById('stat-tempo-medio').textContent = '—';
+    }
   }
 
   // ── Filtro ──────────────────────────────────────────────────
   function filtrarCorridas() {
     const q = document.getElementById('busca').value.toLowerCase();
     const filtrado = corridas.filter(c =>
+      (c.nome || '').toLowerCase().includes(q) ||
       (c.corredor_nome || '').toLowerCase().includes(q) ||
       (c.corredor_turma || '').toLowerCase().includes(q)
     );
-    renderTabela(filtrado);
+    renderGrupos(filtrado);
+  }
+
+  // ── Sugerir próximo nome de corrida (Corrida N) ─────────────
+  function sugerirNomeCorrida() {
+    let maior = 0;
+    corridas.forEach(c => {
+      const m = (c.nome || '').match(/^Corrida\s+(\d+)$/i);
+      if (m) maior = Math.max(maior, parseInt(m[1], 10));
+    });
+    return `Corrida ${maior + 1}`;
+  }
+
+  // ── Pódium (média de tempo por piloto) ─────────────────────
+  function carregarPodium() {
+    fetch('/api/corredores/podium')
+      .then(r => r.json())
+      .then(data => renderPodium(data || []))
+      .catch(err => console.error('Erro ao carregar pódium:', err));
+  }
+
+  function renderPodium(lista) {
+    const container = document.getElementById('podium-container');
+    if (!lista.length) {
+      container.innerHTML = `<div class="empty-state" style="width:100%;"><div class="icon">🏆</div><p>Sem dados suficientes para o pódium ainda</p></div>`;
+      return;
+    }
+
+    const medalhas = ['🥇', '🥈', '🥉'];
+    const classes  = ['first', 'second', 'third'];
+    const top3 = lista.slice(0, 3);
+
+    container.innerHTML = top3.map((p, i) => `
+      <div class="podium-place ${classes[i]}">
+        <div class="podium-medal">${medalhas[i]}</div>
+        <div class="podium-name">${p.nome}</div>
+        <span class="badge badge-white podium-turma">${p.turma}</span>
+        <div class="podium-time">${Number(p.media_tempo).toFixed(2)}</div>
+        <div class="podium-sub">média · ${p.total_corridas} corrida(s)</div>
+        <div class="podium-bar">${i + 1}º</div>
+      </div>
+    `).join('');
   }
 
   // ── Carregar corredores para o select do modal ─────────────
@@ -152,7 +289,7 @@
       .then(data => {
         corredores = data || [];
         const select = document.getElementById('corrida-corredor');
-        select.innerHTML = '<option value="">Selecione um corredor</option>' +
+        select.innerHTML = '<option value="">Selecione um piloto</option>' +
           corredores.map(c => `<option value="${c.id}">${c.nome} — ${c.turma}</option>`).join('');
       })
       .catch(err => {
@@ -161,10 +298,26 @@
   }
 
   // ── Modal ───────────────────────────────────────────────────
-  function abrirModal() {
+  // Sem argumento: cria uma corrida nova (sugere "Corrida N", campo editável)
+  // Com nomeFixo: adiciona um piloto a uma corrida já existente (campo travado)
+  function abrirModal(nomeFixo) {
+    const nomeInput = document.getElementById('corrida-nome');
+    const titulo = document.getElementById('modal-corrida-title');
+
     document.getElementById('corrida-corredor').value = '';
     document.getElementById('corrida-voltas').value = '';
     document.getElementById('corrida-tempo').value = '';
+
+    if (nomeFixo) {
+      nomeInput.value = nomeFixo;
+      nomeInput.readOnly = true;
+      titulo.textContent = `Adicionar Piloto — ${nomeFixo}`;
+    } else {
+      nomeInput.value = sugerirNomeCorrida();
+      nomeInput.readOnly = false;
+      titulo.textContent = 'Nova Corrida';
+    }
+
     carregarCorredoresSelect();
     document.getElementById('modal-corrida').classList.add('open');
   }
@@ -175,12 +328,13 @@
 
   // ── Salvar (POST) ───────────────────────────────────────────
   function salvarCorrida() {
+    const nome = document.getElementById('corrida-nome').value.trim();
     const corredores_id = document.getElementById('corrida-corredor').value;
     const voltas = document.getElementById('corrida-voltas').value;
     const tempo = document.getElementById('corrida-tempo').value;
 
-    if (!corredores_id || !voltas || !tempo) {
-      alert('Selecione o corredor e preencha voltas e tempo.');
+    if (!nome || !corredores_id || !voltas || !tempo) {
+      alert('Preencha o nome da corrida, selecione o piloto e informe voltas e tempo.');
       return;
     }
 
@@ -188,6 +342,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        nome: nome,
         tempo: parseFloat(tempo),
         voltas: parseInt(voltas, 10),
         corredores_id: parseInt(corredores_id, 10)
@@ -201,6 +356,7 @@
       alert('Corrida cadastrada com sucesso!');
       fecharModal();
       carregarCorridas();
+      carregarPodium();
     })
     .catch(err => alert('Erro: ' + err.message));
   }
@@ -211,6 +367,7 @@
   });
 
   carregarCorridas();
+  carregarPodium();
 </script>
 
 </body>
