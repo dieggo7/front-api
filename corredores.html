@@ -218,15 +218,16 @@ function carregarCorredores() {
  function deletarCorredor(id) {
    if (!confirm('Remover este corredor?')) return;
    fetch(`/api/corredores/${id}`, { method: 'DELETE' })
-     .then(r => {
-       if (!r.ok) throw new Error('Erro ao deletar');
-       return r.json();
+     .then(async r => {
+       const data = await r.json().catch(() => ({}));
+       if (!r.ok) throw new Error(data.error || 'Erro ao deletar corredor');
+       return data;
      })
      .then(() => {
        alert('Corredor removido!');
        carregarCorredores();
      })
-     .catch(err => alert('Erro: ' + err.message));
+     .catch(err => alert(err.message));
  }
 
  // ── Fechar modal ao clicar fora ─────────────────────────────

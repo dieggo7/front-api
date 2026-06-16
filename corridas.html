@@ -93,6 +93,8 @@
       <button class="modal-close" onclick="fecharModal()">✕</button>
     </div>
 
+    <input type="hidden" id="corrida-id" />
+
     <div class="form-group">
       <label class="form-label">Nome da Corrida</label>
       <input type="text" class="form-input" placeholder="Ex: Corrida 1" id="corrida-nome" />
@@ -192,6 +194,10 @@
               <div class="race-card-stat-value red">${c.tempo}</div>
             </div>
           </div>
+          <div style="display:flex; gap:8px; margin-top:14px;">
+            <button class="btn btn-outline" style="flex:1; padding:6px 10px; font-size:12px; justify-content:center;" onclick="editarParticipacao(${c.id})">Editar</button>
+            <button class="btn btn-danger" style="flex:1; padding:6px 10px; font-size:12px; justify-content:center;" onclick="removerParticipacao(${c.id})">Remover</button>
+          </div>
         </div>
       `).join('');
 
@@ -283,14 +289,15 @@
   }
 
   // ── Carregar corredores para o select do modal ─────────────
-  function carregarCorredoresSelect() {
+  function carregarCorredoresSelect(selectedId, disable) {
     fetch('/api/corredores')
       .then(r => r.json())
       .then(data => {
         corredores = data || [];
         const select = document.getElementById('corrida-corredor');
         select.innerHTML = '<option value="">Selecione um piloto</option>' +
-          corredores.map(c => `<option value="${c.id}">${c.nome} — ${c.turma}</option>`).join('');
+          corredores.map(c => `<option value="${c.id}" ${selectedId && Number(selectedId) === c.id ? 'selected' : ''}>${c.nome} — ${c.turma}</option>`).join('');
+        select.disabled = !!disable;
       })
       .catch(err => {
         console.error('Erro ao carregar corredores:', err);
@@ -299,35 +306,70 @@
 
   // ── Modal ───────────────────────────────────────────────────
   // Sem argumento: cria uma corrida nova (sugere "Corrida N", campo editável)
-  // Com nomeFixo: adiciona um piloto a uma corrida já existente (campo travado)
-  function abrirModal(nomeFixo) {
+  // String: adiciona um piloto a uma corrida já existente (nome travado)
+  // Objeto (participação): edita tempo/voltas de uma participação existente
+  function abrirModal(opts) {
     const nomeInput = document.getElementById('corrida-nome');
+    const corredorSelect = document.getElementById('corrida-corredor');
+    const idInput = document.getElementById('corrida-id');
     const titulo = document.getElementById('modal-corrida-title');
 
-    document.getElementById('corrida-corredor').value = '';
+    idInput.value = '';
     document.getElementById('corrida-voltas').value = '';
     document.getElementById('corrida-tempo').value = '';
 
-    if (nomeFixo) {
-      nomeInput.value = nomeFixo;
+    if (opts && typeof opts === 'object') {
+      // edição de participação (tempo e voltas)
+      idInput.value = opts.id;
+      nomeInput.value = opts.nome;
       nomeInput.readOnly = true;
-      titulo.textContent = `Adicionar Piloto — ${nomeFixo}`;
+      titulo.textContent = `Editar Participação — ${opts.nome}`;
+      carregarCorredoresSelect(opts.corredores_id, true);
+      document.getElementById('corrida-voltas').value = opts.voltas;
+      document.getElementById('corrida-tempo').value = opts.tempo;
+    } else if (typeof opts === 'string') {
+      nomeInput.value = opts;
+      nomeInput.readOnly = true;
+      titulo.textContent = `Adicionar Piloto — ${opts}`;
+      carregarCorredoresSelect();
     } else {
       nomeInput.value = sugerirNomeCorrida();
       nomeInput.readOnly = false;
       titulo.textContent = 'Nova Corrida';
+      carregarCorredoresSelect();
     }
 
-    carregarCorredoresSelect();
     document.getElementById('modal-corrida').classList.add('open');
+  }
+
+  function editarParticipacao(id) {
+    const c = corridas.find(x => x.id === id);
+    if (c) abrirModal(c);
+  }
+
+  // ── Remover participação (corrida individual) ──────────────
+  function removerParticipacao(id) {
+    if (!confirm('Remover esta participação?')) return;
+    fetch(`/api/corredores/corridas/${id}`, { method: 'DELETE' })
+      .then(async r => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || 'Erro ao remover participação');
+        return data;
+      })
+      .then(() => {
+        carregarCorridas();
+        carregarPodium();
+      })
+      .catch(err => alert(err.message));
   }
 
   function fecharModal() {
     document.getElementById('modal-corrida').classList.remove('open');
   }
 
-  // ── Salvar (POST) ───────────────────────────────────────────
+  // ── Salvar (POST / PUT) ───────────────────────────────────────
   function salvarCorrida() {
+    const id = document.getElementById('corrida-id').value;
     const nome = document.getElementById('corrida-nome').value.trim();
     const corredores_id = document.getElementById('corrida-corredor').value;
     const voltas = document.getElementById('corrida-voltas').value;
@@ -335,6 +377,31 @@
 
     if (!nome || !corredores_id || !voltas || !tempo) {
       alert('Preencha o nome da corrida, selecione o piloto e informe voltas e tempo.');
+      return;
+    }
+
+    if (id) {
+      // editar tempo/voltas de uma participação existente
+      fetch(`/api/corredores/corridas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tempo: parseFloat(tempo),
+          voltas: parseInt(voltas, 10)
+        })
+      })
+      .then(async r => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || 'Erro ao atualizar corrida');
+        return data;
+      })
+      .then(() => {
+        alert('Participação atualizada com sucesso!');
+        fecharModal();
+        carregarCorridas();
+        carregarPodium();
+      })
+      .catch(err => alert(err.message));
       return;
     }
 
@@ -348,9 +415,10 @@
         corredores_id: parseInt(corredores_id, 10)
       })
     })
-    .then(r => {
-      if (!r.ok) throw new Error('Erro ao cadastrar corrida');
-      return r.json();
+    .then(async r => {
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'Erro ao cadastrar corrida');
+      return data;
     })
     .then(() => {
       alert('Corrida cadastrada com sucesso!');
@@ -358,7 +426,7 @@
       carregarCorridas();
       carregarPodium();
     })
-    .catch(err => alert('Erro: ' + err.message));
+    .catch(err => alert(err.message));
   }
 
   // ── Fechar modal ao clicar fora ─────────────────────────────
