@@ -2642,3 +2642,254 @@ tbody tr:hover {
     text-align: center;
   }
 }
+
+/* Overflow fix pass */
+.main,
+.content,
+.card,
+.stat-card,
+.race-card,
+.modal,
+.auth-box,
+.toolbar,
+.toolbar-left,
+.topbar,
+.topbar-actions,
+.topbar-user,
+.table-wrap,
+.podium-place,
+.podium-slot,
+.turma-card {
+  min-width: 0;
+}
+
+.page-header h1,
+.topbar-title,
+.card-title,
+.modal-title,
+.auth-title,
+.auth-logo .logo-mark,
+.sidebar-logo .logo-mark,
+.stat-value,
+.stat-label,
+.stat-sub,
+.race-card-name,
+.race-card-id,
+.race-card-stat-label,
+.race-card-stat-value,
+.podium-name,
+.podium-time,
+.podium-sub,
+.turma-card-name,
+.turma-card-val,
+.bar-label,
+.badge,
+.btn,
+td,
+th {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.topbar {
+  gap: 16px;
+}
+
+.topbar-title {
+  min-width: 0;
+  font-size: clamp(18px, 2.4vw, 24px);
+  line-height: 1;
+}
+
+.topbar-actions {
+  flex: 0 1 auto;
+}
+
+.topbar-user {
+  max-width: min(280px, 44vw);
+}
+
+.topbar-user span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.content {
+  overflow-x: hidden;
+}
+
+.page-header h1 {
+  font-size: clamp(34px, 6.4vw, 74px);
+  line-height: 0.9;
+}
+
+.page-header p,
+.card-title,
+.modal-title,
+.auth-title {
+  line-height: 1.05;
+}
+
+.stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+}
+
+.stat-card {
+  min-height: 126px;
+}
+
+.stat-value {
+  font-size: clamp(34px, 6vw, 48px);
+  line-height: 0.92;
+}
+
+.stat-label {
+  line-height: 1.2;
+}
+
+.race-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+}
+
+.race-card-name {
+  font-size: clamp(22px, 4.2vw, 28px);
+  line-height: 0.98;
+}
+
+.race-card-stats {
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.race-card-stat-value {
+  font-size: clamp(24px, 4.6vw, 30px);
+  line-height: 0.95;
+}
+
+.toolbar {
+  flex-wrap: wrap;
+}
+
+.toolbar-left {
+  flex: 1 1 240px;
+}
+
+.toolbar-left .form-input {
+  width: 100% !important;
+}
+
+.btn {
+  flex-wrap: wrap;
+  min-width: 0;
+  text-align: center;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+thead th,
+tbody td {
+  vertical-align: middle;
+}
+
+tbody td {
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.podium {
+  gap: 16px;
+}
+
+.podium-place {
+  width: min(150px, 100%);
+}
+
+.podium-name {
+  font-size: clamp(16px, 3vw, 20px);
+  line-height: 1;
+}
+
+.auth-box {
+  width: min(100%, 456px);
+}
+
+.auth-logo .logo-mark {
+  font-size: clamp(36px, 10vw, 48px);
+  line-height: 0.9;
+}
+
+.auth-title {
+  font-size: clamp(28px, 8vw, 38px);
+}
+
+@media (max-width: 900px) {
+  .sidebar-nav {
+    scrollbar-width: thin;
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .page-header h1 {
+    font-size: clamp(36px, 11vw, 64px);
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    height: auto;
+    min-height: 62px;
+    align-items: flex-start;
+    padding: 14px 16px;
+  }
+
+  .topbar-title {
+    font-size: 20px;
+  }
+
+  .topbar-user {
+    max-width: 48px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(32px, 12vw, 48px);
+    text-shadow: 2px 0 0 var(--red);
+  }
+
+  .card,
+  .stat-card,
+  .auth-box,
+  .modal {
+    padding: 20px;
+  }
+
+  .stat-value {
+    font-size: clamp(30px, 12vw, 42px);
+  }
+
+  .card-title,
+  .modal-title {
+    font-size: clamp(17px, 6vw, 22px);
+  }
+
+  .toolbar > .btn,
+  .toolbar-left {
+    width: 100%;
+  }
+
+  .race-card [style*="display:flex"] {
+    flex-wrap: wrap;
+  }
+
+  .race-card [style*="display:flex"] .btn {
+    flex-basis: 100%;
+  }
+}
