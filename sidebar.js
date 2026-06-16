@@ -1,12 +1,13 @@
-// sidebar.js — injeta a sidebar em todas as páginas com layout principal
+﻿// sidebar.js - injeta a sidebar em todas as paginas com layout principal.
 // Uso: <div id="sidebar-root"></div> + <script src="sidebar.js"></script>
 
 function renderSidebar(activePage) {
   const links = [
-    { href: 'dashboard.html',   icon: '◈', label: 'Dashboard',    id: 'dashboard'   },
-    { href: 'corredores.html',  icon: '◉', label: 'Corredores',   id: 'corredores'  },
-    { href: 'corridas.html',    icon: '⏱', label: 'Corridas',     id: 'corridas'    },
-    { href: 'ranking.html',     icon: '◆', label: 'Ranking',       id: 'ranking'     },
+    { href: 'dashboard.html', icon: '01', label: 'Dashboard', id: 'dashboard' },
+    { href: 'corredores.html', icon: '02', label: 'Corredores', id: 'corredores' },
+    { href: 'corridas.html', icon: '03', label: 'Corridas', id: 'corridas' },
+    { href: 'ranking.html', icon: '04', label: 'Ranking', id: 'ranking' },
+    { href: 'estatísticas.html', icon: '05', label: 'Estatisticas', id: 'estatisticas' },
   ];
 
   const nav = links.map(l => `
@@ -26,7 +27,7 @@ function renderSidebar(activePage) {
         ${nav}
       </nav>
       <div class="sidebar-footer">
-        <a href="login.html">⎋ &nbsp;Sair</a>
+        <a href="login.html">Sair</a>
       </div>
     </aside>
   `;
@@ -35,31 +36,28 @@ function renderSidebar(activePage) {
   if (root) root.innerHTML = html;
 }
 
-// Modal para trocar usuário
 function setupChangeUserModal() {
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-  
-  // Atualizar nome do usuário no topo
+
   const topbarUserName = document.getElementById('topbar-user-name');
   const avatar = document.querySelector('.avatar');
   if (topbarUserName && usuario.nome) {
     topbarUserName.textContent = usuario.nome;
     if (avatar) avatar.textContent = usuario.nome.charAt(0).toUpperCase();
   }
-  
-  // Criar modal de trocar usuário
+
   const modalHTML = `
     <div class="modal-overlay" id="modal-user-change">
       <div class="modal" style="max-width: 400px;">
         <div class="modal-header">
-          <span class="modal-title">Trocar Usuário</span>
-          <button class="modal-close" onclick="fecharModalTrocarUsuario()">✕</button>
+          <span class="modal-title">Trocar Usuario</span>
+          <button class="modal-close" onclick="fecharModalTrocarUsuario()">x</button>
         </div>
-        
+
         <div class="form-group">
-          <label class="form-label">Usuário Atual</label>
-          <div style="padding: 10px; background: rgba(255,255,255,0.06); border-radius: 4px; color: var(--white);">
-            <strong>${usuario.nome || 'Não identificado'}</strong><br>
+          <label class="form-label">Usuario Atual</label>
+          <div style="padding: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: var(--white);">
+            <strong>${usuario.nome || 'Nao identificado'}</strong><br>
             <small>${usuario.email || ''}</small>
           </div>
         </div>
@@ -71,22 +69,21 @@ function setupChangeUserModal() {
 
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" class="form-input" placeholder="••••••••" id="user-change-senha" />
+          <input type="password" class="form-input" placeholder="********" id="user-change-senha" />
         </div>
 
         <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
           <button class="btn btn-outline" onclick="fecharModalTrocarUsuario()">Cancelar</button>
-          <button class="btn btn-primary" onclick="executarTrocarUsuario()">Trocar Usuário</button>
+          <button class="btn btn-primary" onclick="executarTrocarUsuario()">Trocar Usuario</button>
         </div>
       </div>
     </div>
   `;
-  
+
   if (!document.getElementById('modal-user-change')) {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
   }
-  
-  // Adicionar evento de clique no topbar-user
+
   const topbarUser = document.querySelector('.topbar-user');
   if (topbarUser) {
     topbarUser.style.cursor = 'pointer';
@@ -122,7 +119,7 @@ function executarTrocarUsuario() {
   .then(data => {
     localStorage.setItem('token', data.token);
     localStorage.setItem('usuario', JSON.stringify(data.usuario));
-    alert('Usuário alterado com sucesso!');
+    alert('Usuario alterado com sucesso!');
     location.reload();
   })
   .catch(err => {
@@ -131,7 +128,6 @@ function executarTrocarUsuario() {
   });
 }
 
-// Fechar modal ao clicar fora
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', function(e) {
     const modal = document.getElementById('modal-user-change');
@@ -140,3 +136,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
