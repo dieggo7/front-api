@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KERBERUS — Estatísticas</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .stats-panel {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 180px) 1fr 72px;
+      gap: 12px;
+      align-items: center;
+      color: var(--white);
+      font-size: 14px;
+    }
+
+    .bar-track {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--red);
+      min-width: 2px;
+    }
+
+    .turmas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .turma-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .turma-card-name {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .turma-card-val {
+      color: var(--white);
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .stats-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="sidebar-root"></div>
+
+<div class="main">
+
+  <header class="topbar">
+    <span class="topbar-title">Estatísticas</span>
+    <div class="topbar-actions">
+      <button class="btn btn-outline" onclick="carregarEstatisticas()">Atualizar</button>
+      <div class="topbar-user">
+        <div class="avatar">U</div>
+        <span id="topbar-user-name">Usuário</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header">
+      <h1>Estatísticas</h1>
+      <p>Indicadores calculados com os dados cadastrados no sistema</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Corredores</div>
+        <div class="stat-value" id="stat-corredores">—</div>
+        <div class="stat-sub">cadastrados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Corridas</div>
+        <div class="stat-value" id="stat-corridas">—</div>
+        <div class="stat-sub">realizadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Turmas</div>
+        <div class="stat-value" id="stat-turmas">—</div>
+        <div class="stat-sub">ativas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Melhor Tempo</div>
+        <div class="stat-value red" id="stat-melhor-tempo">—</div>
+        <div class="stat-sub" id="stat-melhor-corredor">—</div>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="card">
+        <div class="card-title">Ranking Geral</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pos.</th>
+                <th>Corredor</th>
+                <th>Turma</th>
+                <th>Tempo Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-ranking">
+              <tr>
+                <td colspan="4">
+                  <div class="empty-state">
+                    <div class="icon">🏆</div>
+                    <p>Carregando ranking</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pódium por Média</div>
+        <div class="podium" id="podium-container">
+          <div class="empty-state" style="width:100%;">
+            <div class="icon">🏁</div>
+            <p>Carregando pódium</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="card">
+        <div class="card-title">Voltas por Corredor</div>
+        <div class="bar-list" id="voltas-lista">
+          <div class="empty-state">
+            <div class="icon">⏱️</div>
+            <p>Carregando voltas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Corredores por Turma</div>
+        <div class="turmas-grid" id="turmas-grid">
+          <div class="empty-state">
+            <div class="icon">🏎️</div>
+            <p>Carregando turmas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+  renderSidebar('estatisticas');
+  setupChangeUserModal();
+
+  function numero(valor) {
+    const convertido = Number(valor);
+    return Number.isFinite(convertido) ? convertido : 0;
+  }
+
+  function mostrarErro(mensagem) {
+    console.error(mensagem);
+  }
+
+  function carregarResumo() {
+    return fetch('/api/estatisticas')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar resumo');
+        return r.json();
+      })
+      .then(data => {
+        document.getElementById('stat-corredores').textContent = data.total_corredores ?? 0;
+        document.getElementById('stat-corridas').textContent = data.total_corridas ?? 0;
+        document.getElementById('stat-turmas').textContent = data.total_turmas ?? 0;
+      });
+  }
+
+  function carregarMelhorVolta() {
+    return fetch('/api/corredores/melhor-volta')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar melhor volta');
+        return r.json();
+      })
+      .then(data => {
+        document.getElementById('stat-melhor-tempo').textContent = data?.tempo ? `${data.tempo}s` : '—';
+        document.getElementById('stat-melhor-corredor').textContent = data?.nome || '—';
+      });
+  }
+
+  function carregarRanking() {
+    return fetch('/api/estatisticas/ranking')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar ranking');
+        return r.json();
+      })
+      .then(lista => {
+        const tbody = document.getElementById('tbody-ranking');
+
+        if (!lista.length) {
+          tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="icon">🏆</div><p>Sem dados de ranking ainda</p></div></td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = lista.map((r, i) => `
+          <tr>
+            <td><span class="rank-num ${i < 3 ? 'top' : ''}">${i + 1}</span></td>
+            <td>${r.nome}</td>
+            <td><span class="badge badge-white">${r.turma}</span></td>
+            <td class="${i === 0 ? 'td-red' : ''}">${r.tempo_total ?? '—'}</td>
+          </tr>
+        `).join('');
+      });
+  }
+
+  function carregarPodium() {
+    return fetch('/api/corredores/podium')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar pódium');
+        return r.json();
+      })
+      .then(lista => {
+        const container = document.getElementById('podium-container');
+
+        if (!lista.length) {
+          container.innerHTML = `<div class="empty-state" style="width:100%;"><div class="icon">🏁</div><p>Sem dados suficientes para o pódium</p></div>`;
+          return;
+        }
+
+        const medalhas = ['🥇', '🥈', '🥉'];
+        const classes = ['first', 'second', 'third'];
+
+        container.innerHTML = lista.slice(0, 3).map((p, i) => `
+          <div class="podium-place ${classes[i]}">
+            <div class="podium-medal">${medalhas[i]}</div>
+            <div class="podium-name">${p.nome}</div>
+            <span class="badge badge-white podium-turma">${p.turma}</span>
+            <div class="podium-time">${numero(p.media_tempo).toFixed(2)}</div>
+            <div class="podium-sub">média · ${p.total_corridas} corrida(s)</div>
+            <div class="podium-bar">${i + 1}º</div>
+          </div>
+        `).join('');
+      });
+  }
+
+  function carregarVoltas() {
+    return fetch('/api/corredores/voltas')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar voltas');
+        return r.json();
+      })
+      .then(lista => {
+        const container = document.getElementById('voltas-lista');
+
+        if (!lista.length) {
+          container.innerHTML = `<div class="empty-state"><div class="icon">⏱️</div><p>Sem voltas registradas</p></div>`;
+          return;
+        }
+
+        const maior = Math.max(...lista.map(item => numero(item.total_voltas)), 1);
+
+        container.innerHTML = lista.map(item => {
+          const total = numero(item.total_voltas);
+          const largura = Math.max((total / maior) * 100, 3);
+          return `
+            <div class="bar-row">
+              <span>${item.nome}</span>
+              <div class="bar-track"><div class="bar-fill" style="width:${largura}%"></div></div>
+              <strong>${total}</strong>
+            </div>
+          `;
+        }).join('');
+      });
+  }
+
+  function carregarTurmas() {
+    return fetch('/api/estatisticas/turmas')
+      .then(r => {
+        if (!r.ok) throw new Error('Erro ao carregar corredores por turma');
+        return r.json();
+      })
+      .then(turmas => {
+        const container = document.getElementById('turmas-grid');
+        const entradas = turmas
+          .map(item => [item.turma || 'Sem turma', item.total_corredores])
+          .sort((a, b) => a[0].localeCompare(b[0], 'pt-BR', { numeric: true }));
+
+        if (!entradas.length) {
+          container.innerHTML = `<div class="empty-state"><div class="icon">🏎️</div><p>Nenhuma turma cadastrada</p></div>`;
+          return;
+        }
+
+        container.innerHTML = entradas.map(([turma, total]) => `
+          <div class="turma-card">
+            <div class="turma-card-name">${turma}</div>
+            <div class="turma-card-val">${total}</div>
+          </div>
+        `).join('');
+      });
+  }
+
+  function carregarEstatisticas() {
+    Promise.all([
+      carregarResumo(),
+      carregarMelhorVolta(),
+      carregarRanking(),
+      carregarPodium(),
+      carregarVoltas(),
+      carregarTurmas()
+    ]).catch(err => mostrarErro(err));
+  }
+
+  carregarEstatisticas();
+</script>
+
+</body>
+</html>

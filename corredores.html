@@ -87,7 +87,17 @@
 
     <div class="form-group">
       <label class="form-label">Equipe</label>
-      <input type="text" class="form-input" placeholder="Ex: Equipe Alpha" id="corredor-equipe" />
+      <select class="form-input" id="corredor-equipe">
+        <option value="">Selecione uma equipe</option>
+        <option value="Apex Storm">Apex Storm</option>
+        <option value="Cowabunga">Cowabunga</option>
+        <option value="Kerberus">Kerberus</option>
+        <option value="Lightning mcqueen">Lightning mcqueen</option>
+        <option value="Racing angels">Racing angels</option>
+        <option value="Sakura Racing">Sakura Racing</option>
+        <option value="Septen Racing">Septen Racing</option>
+        <option value="Wind speed">Wind speed</option>
+      </select>
     </div>
 
     <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
@@ -103,6 +113,27 @@
   setupChangeUserModal();
 
   let corredores = []; // será preenchido pela API
+  const equipesOficiais = [
+    'Apex Storm',
+    'Cowabunga',
+    'Kerberus',
+    'Lightning mcqueen',
+    'Racing angels',
+    'Sakura Racing',
+    'Septen Racing',
+    'Wind speed'
+  ];
+
+ function garantirEquipeSelecionavel(equipe) {
+   if (!equipe || equipesOficiais.includes(equipe)) return;
+
+   const select = document.getElementById('corredor-equipe');
+   const jaExiste = Array.from(select.options).some(option => option.value === equipe);
+
+   if (!jaExiste) {
+     select.insertAdjacentHTML('beforeend', `<option value="${equipe}">${equipe}</option>`);
+   }
+ }
 
  // ── Carregar lista ──────────────────────────────────────────
 function carregarCorredores() {
@@ -141,7 +172,9 @@ function carregarCorredores() {
  function filtrarCorredores() {
    const q = document.getElementById('busca').value.toLowerCase();
    const filtrado = corredores.filter(c =>
-     c.nome.toLowerCase().includes(q) || c.turma.toLowerCase().includes(q)
+     c.nome.toLowerCase().includes(q) ||
+     c.turma.toLowerCase().includes(q) ||
+     (c.equipe || '').toLowerCase().includes(q)
    );
    renderTabela(filtrado);
  }
@@ -159,6 +192,7 @@ function carregarCorredores() {
      if (c) {
        document.getElementById('corredor-nome').value   = c.nome;
        document.getElementById('corredor-turma').value  = c.turma;
+       garantirEquipeSelecionavel(c.equipe);
        document.getElementById('corredor-equipe').value = c.equipe || '';
      }
    }

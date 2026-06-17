@@ -89,6 +89,22 @@
   setupChangeUserModal();
 
   // Carregar dados reais do backend
+  fetch('/api/estatisticas')
+    .then(r => {
+      if (!r.ok) throw new Error('Erro ao carregar estatísticas');
+      return r.json();
+    })
+    .then(data => {
+      document.getElementById('stat-corredores').textContent = data.total_corredores ?? 0;
+      document.getElementById('stat-corridas').textContent = data.total_corridas ?? 0;
+      document.getElementById('stat-turmas').textContent = data.total_turmas ?? 0;
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('stat-corredores').textContent = '0';
+      document.getElementById('stat-corridas').textContent = '0';
+      document.getElementById('stat-turmas').textContent = '0';
+    });
 
   // Melhor volta: GET /api/corredores/melhor-volta
   fetch('/api/corredores/melhor-volta')
@@ -112,7 +128,7 @@
             <td><span class="rank-num ${i < 3 ? 'top' : ''}">${i+1}</span></td>
             <td>${r.nome}</td>
             <td><span class="badge badge-white">${r.turma}</span></td>
-            <td class="td-red">${r['SUM(corridas.tempo)'] || '—'}</td>
+            <td class="td-red">${r.tempo_total || '—'}</td>
           </tr>
         `).join('');
       }

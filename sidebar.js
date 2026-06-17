@@ -7,7 +7,7 @@ function renderSidebar(activePage) {
     { href: 'corredores.html', icon: '02', label: 'Corredores', id: 'corredores' },
     { href: 'corridas.html', icon: '03', label: 'Corridas', id: 'corridas' },
     { href: 'ranking.html', icon: '04', label: 'Ranking', id: 'ranking' },
-    { href: 'estatísticas.html', icon: '05', label: 'Estatisticas', id: 'estatisticas' },
+    { href: 'estatisticas.html', icon: '05', label: 'Estatisticas', id: 'estatisticas' },
   ];
 
   const nav = links.map(l => `

@@ -81,7 +81,7 @@
         <td><span class="rank-num ${i < 3 ? 'top' : ''}">${i + 1}</span></td>
         <td>${r.nome}</td>
         <td><span class="badge badge-white">${r.turma}</span></td>
-        <td class="${i === 0 ? 'td-red' : ''}">${r['SUM(corridas.tempo)'] ?? '—'}</td>
+        <td class="${i === 0 ? 'td-red' : ''}">${r.tempo_total ?? '—'}</td>
       </tr>
     `).join('');
   }
